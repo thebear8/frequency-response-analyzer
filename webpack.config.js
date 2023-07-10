@@ -5,6 +5,9 @@ module.exports = {
   mode: "development",
   entry: "./src/index.js",
   devtool: "inline-source-map",
+  devServer: {
+    static: "./dist",
+  },
   plugins: [new HtmlWebpackPlugin({ name: "Development" })],
   output: {
     filename: "[name].bundle.js",

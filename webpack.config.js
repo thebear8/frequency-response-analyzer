@@ -29,4 +29,5 @@ module.exports = {
   resolve: {
     extensions: [".js", ".ts"],
   },
+  watchOptions: { poll: 1000, ignore: /node_modules/ },
 };

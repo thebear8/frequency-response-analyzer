@@ -1,4 +1,4 @@
-export function Action(name: string, action: any): string {
+export function Action(name: string, action: () => void): string {
   const actions = ((window as any).actions ??= {}) as any;
 
   if (Object.keys(actions).includes(name))

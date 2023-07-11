@@ -1,7 +1,11 @@
-async function beginAudioCapture() {
-  const md = new MediaDevices();
+export type AudioCaptureState = {
+  stream: MediaStream;
+  audioCtx: AudioContext;
+  chunks: Float32Array[];
+};
 
-  const stream = await md
+export async function beginAudioCapture(): Promise<AudioCaptureState> {
+  const stream = await navigator.mediaDevices
     .getUserMedia({
       audio: {
         autoGainControl: false,
@@ -29,17 +33,13 @@ async function beginAudioCapture() {
   return { stream, audioCtx, chunks };
 }
 
-function endAudioCapture({
+export function endAudioCapture({
   stream,
   audioCtx,
   chunks,
-}: {
-  stream: MediaStream;
-  audioCtx: AudioContext;
-  chunks: Float32Array[];
-}) {
+}: AudioCaptureState) {
   stream.getTracks().forEach((t) => t.stop());
   audioCtx.close();
 
-  console.log("Hello World");
+  return chunks.map((a) => Array.from(a)).flat();
 }

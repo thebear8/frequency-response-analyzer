@@ -1,3 +1,5 @@
+// https://towardsdatascience.com/fast-fourier-transform-937926e591cb
+
 export function dft(real: number[], imag: number[]): [number[], number[]] {
   if (real.length !== imag.length)
     throw new RangeError("Real/Imaginary vector lengths have to be equal");

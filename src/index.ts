@@ -2,6 +2,8 @@ import { Button } from "./ui/button";
 import { Action } from "./ui/action";
 import { Row } from "./ui/container";
 import { AudioCaptureState, beginAudioCapture, endAudioCapture } from "./audio";
+import { fft } from "./fft";
+import { transform } from "./nayuki-fft";
 
 function render(component: () => string) {
   const html = document.querySelector("html")!;
@@ -37,3 +39,20 @@ render(() =>
     )
   )
 );
+
+const data = Array.from(Array(8), (_, i) => Math.sin(i));
+console.log(data);
+
+const [freqData, freqDataImag] = fft(
+  data,
+  Array.from(data, () => 0)
+);
+
+console.log(freqData);
+
+transform(
+  data,
+  Array.from(data, () => 0)
+);
+
+console.log(data);

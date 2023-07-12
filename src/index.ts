@@ -2,8 +2,7 @@ import { Button } from "./ui/button";
 import { Action } from "./ui/action";
 import { Row } from "./ui/container";
 import { AudioCaptureState, beginAudioCapture, endAudioCapture } from "./audio";
-import { fft } from "./fft";
-import { transform } from "./nayuki-fft";
+import { dft, fft } from "./fft";
 
 function render(component: () => string) {
   const html = document.querySelector("html")!;
@@ -21,38 +20,56 @@ function render(component: () => string) {
 
 let audioState = undefined as AudioCaptureState | undefined;
 
+async function begin() {
+  audioState = await beginAudioCapture();
+}
+
+async function end() {
+  if (!audioState) return;
+
+  const hanning = (k: number, N: number) =>
+    0.5 * (1 - Math.cos((2 * Math.PI * k) / (N - 1)));
+
+  const samples = endAudioCapture(audioState);
+  const windowedSamples = samples.map((s, k) => s * hanning(k, samples.length));
+
+  while (windowedSamples.length & (windowedSamples.length - 1))
+    windowedSamples.push(0);
+
+  const [fftReal, fftImag] = fft(
+    windowedSamples,
+    Array.from(windowedSamples, () => 0)
+  );
+
+  console.log("FFT: ");
+  console.log(fftReal);
+  console.log(fftImag);
+
+  const [dftReal, dftImag] = dft(
+    windowedSamples,
+    Array.from(windowedSamples, () => 0)
+  );
+
+  console.log("DFT: ");
+  console.log(dftReal);
+  console.log(dftImag);
+}
+
 render(() =>
   Row(
-    Button(
-      "Begin capturing audio",
-      Action(
-        "beginCapture",
-        async () => (audioState = await beginAudioCapture())
-      )
-    ),
-    Button(
-      "End capturing audio",
-      Action(
-        "endCapture",
-        () => audioState && console.log(endAudioCapture(audioState))
-      )
-    )
+    Button("Begin capturing audio", Action("begin", begin)),
+    Button("End capturing audio", Action("end", end))
   )
 );
 
-const data = Array.from(Array(8), (_, i) => Math.sin(i));
-console.log(data);
+const signal = Array.from(Array(8), (_, i) => Math.sin(i));
+const [dftReal, dftImag] = dft(signal, signal);
+const [fftReal, fftImag] = fft(signal, signal);
 
-const [freqData, freqDataImag] = fft(
-  data,
-  Array.from(data, () => 0)
-);
+console.log("Real: ");
+console.log("DFT: ", dftReal);
+console.log("FFT: ", fftReal);
 
-console.log(freqData);
-
-transform(
-  data,
-  Array.from(data, () => 0)
-);
-
-console.log(data);
+console.log("Imaginary: ");
+console.log("DFT: ", dftImag);
+console.log("FFT: ", fftImag);

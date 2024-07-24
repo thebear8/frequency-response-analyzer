@@ -52,8 +52,8 @@ export function endAudioCapture({ stream, audioCtx, chunks }) {
 export function playAudioBuffer(samples, fs = 48000) {
   const audioCtx = new AudioContext();
   const buffer = audioCtx.createBuffer(1, samples.length, fs);
-
-  console.log(samples, samples.length);
+  const data = buffer.getChannelData(0);
+  samples.forEach((s, i) => (data[i] = s));
 
   const source = audioCtx.createBufferSource();
   source.buffer = buffer;

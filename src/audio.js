@@ -44,3 +44,19 @@ export function endAudioCapture({ stream, audioCtx, chunks }) {
 
   return chunks.map((a) => Array.from(a)).flat();
 }
+
+/**
+ *
+ * @param {number[]} samples
+ */
+export function playAudioBuffer(samples, fs = 48000) {
+  const audioCtx = new AudioContext();
+  const buffer = audioCtx.createBuffer(1, samples.length, fs);
+
+  console.log(samples, samples.length);
+
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioCtx.destination);
+  source.start();
+}

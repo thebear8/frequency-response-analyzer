@@ -10,10 +10,12 @@ export function calculateExponentialSineSweep(
   T = 10,
   fs = 48000
 ) {
-  const R = f2 / f1;
+  console.log(linspace(0, 1, 100));
+
+  const R = Math.log(f2 / f1);
   const t = linspace(0, T, fs * T);
-  return t.map(
-    (t) => ((2 * Math.PI * f1 * T) / R) * (Math.exp(t * (R / T)) - 1)
+  return t.map((t) =>
+    Math.sin(((2 * Math.PI * f1 * T) / R) * (Math.exp(t * (R / T)) - 1))
   );
 }
 
